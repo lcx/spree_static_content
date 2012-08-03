@@ -7,9 +7,10 @@ end
 
 class Spree::StaticPage
   def self.matches?(request)
+    @current_store ||= Spree::Store.current(request.env['SERVER_NAME'])
     slug = StaticPage::remove_spree_mount_point(request.fullpath)
     pages = Spree::Page.arel_table
-    Spree::Page.visible.by_slug(slug).exists?
+    Spree::Page.visible.by_slug(slug,"/#{@current_store.try(:code)}").exists?
   end
 end
 
